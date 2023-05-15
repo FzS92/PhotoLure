@@ -5,7 +5,6 @@ import matplotlib.pyplot as plt
 import cv2
 
 
-prompt = ["sky", "others"]
 img = "IMG-20220730-WA0037.jpg"
 input_point = np.array([[0, 0]])
 input_label = np.array([2])
