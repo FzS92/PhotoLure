@@ -7,7 +7,7 @@ import cv2
 
 img = "IMG-20220730-WA0037.jpg"
 input_point = np.array([[0, 0]])
-input_label = np.array([2])
+input_label = np.array([1])
 
 
 def show_mask(mask, ax, random_color=False):
