@@ -31,7 +31,7 @@ def pil_save(addr, img):
     pil_image.save(addr)
 
 # Parameters
-img_path = "images/dog.jpg"
+img_path = "images/man1.jpg"
 target_path = "./data"
 target_shape = (256,256)
 
@@ -66,19 +66,21 @@ masks, scores, logits = predictor.predict(
     multimask_output=True,
 )
 
-### Print all masks for the first time to choose the right mask ###
-# for i, (mask, score) in enumerate(zip(masks, scores)):
-#     plt.figure(figsize=(10,10))
-#     plt.imshow(image)
-#     show_mask(mask, plt.gca())
-#     show_points(input_point, input_label, plt.gca())
-#     # mask = torchvision.transforms.Resize((406,503))(mask)
-#     plt.title(f"Mask {i+1}, Score: {score:.3f}", fontsize=18)
-#     plt.axis('off')
-#     plt.savefig(f"result{i}.png")  
+
+## Print all masks for the first time to choose the right mask ###
+image_id = Path(img_path).stem
+for i, (mask, score) in enumerate(zip(masks, scores)):
+    plt.figure(figsize=(10,10))
+    plt.imshow(image)
+    show_mask(mask, plt.gca())
+    show_points(input_point, input_label, plt.gca())
+    # mask = torchvision.transforms.Resize((406,503))(mask)
+    plt.title(f"Mask {i+1}, Score: {score:.3f}", fontsize=18)
+    plt.axis('off')
+    plt.savefig(f"results/result{i}{image_id}.png")  
 
 
-# choose the right mask
+# choose the right mask ***************
 mask = 1- masks[-1]
 
 # make the mask RGBA
@@ -87,5 +89,6 @@ new_mask[:,:,-1] = mask
 print(image.shape, new_mask.shape)
 
 # save mask and image
-pil_save(str(target_path / 'image.png'), image)
-pil_save(str(target_path / 'mask.png'), new_mask*255)
+image_id = Path(img_path).stem
+pil_save(str(target_path / f'{image_id}.png'), image)
+pil_save(str(target_path / f'mask_{image_id}.png'), new_mask*255)
