@@ -7,7 +7,7 @@ from pathlib import Path
 import os
 
 # Parameters
-img_path = "./images/chow.jpg"
+img_path = "./images/banana.jpg"
 is_top_background = True
 is_left_background = True
 is_right_background = True
