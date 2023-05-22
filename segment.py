@@ -7,7 +7,7 @@ from pathlib import Path
 import os
 
 # Parameters
-img_path = "./images/IMG-20220730-WA0037.jpg"
+img_path = "./images/chow.jpg"
 target_path = "./data"
 target_shape = (256, 256)
 
@@ -65,8 +65,12 @@ model = "vit_h"
 checkpoint = "./sam_vit_h_4b8939.pth"
 device = "cpu"
 
-input_point = np.array([[0, 0]])
-input_label = np.array([1])
+# input_point = np.array([[0, 0], [0, 200]])
+# input_label = np.array([1, 1])
+input_point = np.zeros((256, 2), dtype=np.int32)
+input_point[:, 1] = np.arange(256)
+input_label = np.ones(256, dtype=np.int32)
+
 
 print(f"Loading the model on {device}")
 sam = sam_model_registry[model](checkpoint=checkpoint)
@@ -74,7 +78,7 @@ sam.to(device=device)
 print("Done!")
 
 # segment the image
-print("Finding the background at (0,0)")
+print("Finding the background at (0,0) to (0, 255)")
 predictor = SamPredictor(sam)
 predictor.set_image(image)
 masks, scores, logits = predictor.predict(
@@ -129,3 +133,5 @@ new_mask[:, :, -1] = mask
 image_id = Path(img_path).stem
 pil_save(str(target_path / f'{image_id}.png'), new_image)
 pil_save(str(target_path / f'mask_{image_id}.png'), new_mask*255)
+
+print("Done!")
