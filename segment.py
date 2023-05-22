@@ -7,11 +7,11 @@ from pathlib import Path
 import os
 
 # Parameters
-img_path = "./images/banana.jpg"
+img_path = "./images/selfie.jpg"
 is_top_background = True
 is_left_background = True
 is_right_background = True
-is_bottom_background = True
+is_bottom_background = False
 
 
 target_path = "./data"
@@ -67,8 +67,8 @@ image = cv2.resize(image, dsize=target_shape, interpolation=cv2.INTER_CUBIC)
 
 
 # The Segment Anything model
-model = "vit_h"
-checkpoint = "./sam_vit_h_4b8939.pth"
+model = "vit_l"  # vit_b, vit_l, vit_h
+checkpoint = "./sam_vit_l_0b3195.pth"
 device = "cpu"
 
 # input_point = np.array([[0, 0], [255, 0]])

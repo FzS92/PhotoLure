@@ -7,9 +7,9 @@ from torchvision.utils import save_image
 import wget
 
 # Parameters
-img = 'data/banana.png'
-mask = 'data/mask_banana.png'
-out = 'data/out_banana.png'
+img = 'data/selfie.png'
+mask = 'data/mask_selfie.png'
+out = 'data/out_selfie.png'
 
 
 # prompt = 'A sunlit indoor lounge area with a pool containing a dog'
@@ -18,7 +18,9 @@ out = 'data/out_banana.png'
 # prompt = 'At the background scary lightning black and white, Real, nature, ultra detailed, 8k'
 # prompt = 'we are in a luxury huge private yacht, sailing in the bahamas with palm trees in the background and hardwood deck on the yacht, cinematic, nature, hyperrealistic, 8 k'
 # prompt = 'we are in a luxury huge private yacht on water and sunshine in the background'
-prompt = 'Banana on the table and in the background scary lightning black and white, Real, nature, ultra detailed, 8k'
+# prompt = 'Banana on the table and in the background scary lightning black and white, Real, nature, ultra detailed, 8k'
+# prompt = 'Two scary dogs are looking at the camera at night, real, hidden cammera, night 4k'
+prompt = 'Mayan city pramid sunset ivy foliage abandoned luminiscense scultures dark sky forest stars concept landscape environment depth water waterfall river realistyc'
 
 
 # setting up openai
