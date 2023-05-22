@@ -8,6 +8,12 @@ import os
 
 # Parameters
 img_path = "./images/chow.jpg"
+is_top_background = True
+is_left_background = True
+is_right_background = True
+is_bottom_background = True
+
+
 target_path = "./data"
 target_shape = (256, 256)
 
@@ -65,12 +71,40 @@ model = "vit_h"
 checkpoint = "./sam_vit_h_4b8939.pth"
 device = "cpu"
 
-# input_point = np.array([[0, 0], [0, 200]])
+# input_point = np.array([[0, 0], [255, 0]])
 # input_label = np.array([1, 1])
-input_point = np.zeros((256, 2), dtype=np.int32)
-input_point[:, 1] = np.arange(256)
-input_label = np.ones(256, dtype=np.int32)
+input_point = np.empty((0, 2))
 
+if is_top_background:
+    input_point_top = np.zeros((256, 2), dtype=np.int32)
+    input_point_top[:, 0] = np.arange(256)
+    input_point_top[:, 1] = np.ones(256)
+    input_point = np.append(input_point, input_point_top, axis=0)
+
+if is_left_background:
+    input_point_left = np.zeros((256, 2), dtype=np.int32)
+    input_point_left[:, 1] = np.arange(256)
+    input_point_left[:, 0] = np.ones(256)
+    input_point = np.append(input_point, input_point_left, axis=0)
+
+if is_right_background:
+    input_point_right = np.zeros((256, 2), dtype=np.int32)
+    input_point_right[:, 1] = np.arange(256)
+    input_point_right[:, 0] = np.ones(256) * (254)
+    input_point = np.append(input_point, input_point_right, axis=0)
+
+if is_bottom_background:
+    input_point_bottom = np.zeros((256, 2), dtype=np.int32)
+    input_point_bottom[:, 0] = np.arange(256)
+    input_point_bottom[:, 1] = np.ones(256) * (254)
+    input_point = np.append(input_point, input_point_bottom, axis=0)
+
+if (not is_top_background) and (not is_right_background) and (not is_bottom_background) and (not is_left_background):
+    raise ValueError("At least one edge is needed.")
+
+input_point = np.unique(input_point, axis=0)
+
+input_label = np.ones(input_point.shape[0], dtype=np.int32)
 
 print(f"Loading the model on {device}")
 sam = sam_model_registry[model](checkpoint=checkpoint)
@@ -78,7 +112,7 @@ sam.to(device=device)
 print("Done!")
 
 # segment the image
-print("Finding the background at (0,0) to (0, 255)")
+print("Finding the background")
 predictor = SamPredictor(sam)
 predictor.set_image(image)
 masks, scores, logits = predictor.predict(
@@ -134,4 +168,4 @@ image_id = Path(img_path).stem
 pil_save(str(target_path / f'{image_id}.png'), new_image)
 pil_save(str(target_path / f'mask_{image_id}.png'), new_mask*255)
 
-print("Done!")
+print("Files are saved")
