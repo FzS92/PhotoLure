@@ -6,16 +6,18 @@ from PIL import Image
 from pathlib import Path
 import os
 
-# Parameters
+# Specify image path, y position of image in the larger image, and  background lines
 img_path = "./images/selfie.jpg"
 is_top_background = True
 is_left_background = True
 is_right_background = True
 is_bottom_background = False
+go_up = 0.1
 
 
 target_path = "./data"
-target_shape = (256, 256)
+target_shape = 256
+output_shape = 512
 
 # Check if the results directory exists
 if not os.path.exists("results"):
@@ -55,15 +57,42 @@ def pil_save(addr, img):
     pil_image.save(addr)
 
 
+def resize_image(img_path):
+    # Read the image
+    image = cv2.imread(img_path)
+
+    # Get the current width and height
+    height, width = image.shape[:2]
+
+    # Determine the maximum dimension
+    max_dimension = max(height, width)
+
+    # Calculate the scaling factor
+    scale = 256 / max_dimension
+
+    # Resize the image with the scaling factor
+    new_width = int(width * scale)
+    new_height = int(height * scale)
+
+    if new_width % 2 != 0:  # If the number is odd
+        new_width += 1  # Add 1 to make it even
+    if new_height % 2 != 0:  # If the number is odd
+        new_height += 1  # Add 1 to make it even
+
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    resized_image = cv2.resize(image, dsize=(
+        new_width, new_height), interpolation=cv2.INTER_CUBIC)
+
+    return resized_image, new_width, new_height
+
+
 # make the target directory
 target_path = Path(target_path)
 target_path.mkdir(exist_ok=True)
 
 
-# load the image
-image = cv2.imread(img_path)
-image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)  # 503 x 406 x 3
-image = cv2.resize(image, dsize=target_shape, interpolation=cv2.INTER_CUBIC)
+# load and resize the image
+image, width, height = resize_image(img_path)
 
 
 # The Segment Anything model
@@ -75,28 +104,34 @@ device = "cpu"
 # input_label = np.array([1, 1])
 input_point = np.empty((0, 2))
 
+
+target_shape = 256
+output_shape = 512
+width, height
+
+
 if is_top_background:
-    input_point_top = np.zeros((256, 2), dtype=np.int32)
-    input_point_top[:, 0] = np.arange(256)
-    input_point_top[:, 1] = np.ones(256)
+    input_point_top = np.zeros((width, 2), dtype=np.int32)
+    input_point_top[:, 0] = np.arange(width)
+    input_point_top[:, 1] = np.ones(width)
     input_point = np.append(input_point, input_point_top, axis=0)
 
 if is_left_background:
-    input_point_left = np.zeros((256, 2), dtype=np.int32)
-    input_point_left[:, 1] = np.arange(256)
-    input_point_left[:, 0] = np.ones(256)
+    input_point_left = np.zeros((height, 2), dtype=np.int32)
+    input_point_left[:, 1] = np.arange(height)
+    input_point_left[:, 0] = np.ones(height)
     input_point = np.append(input_point, input_point_left, axis=0)
 
 if is_right_background:
-    input_point_right = np.zeros((256, 2), dtype=np.int32)
-    input_point_right[:, 1] = np.arange(256)
-    input_point_right[:, 0] = np.ones(256) * (254)
+    input_point_right = np.zeros((height, 2), dtype=np.int32)
+    input_point_right[:, 1] = np.arange(height)
+    input_point_right[:, 0] = np.ones(height) * (width-2)
     input_point = np.append(input_point, input_point_right, axis=0)
 
 if is_bottom_background:
-    input_point_bottom = np.zeros((256, 2), dtype=np.int32)
-    input_point_bottom[:, 0] = np.arange(256)
-    input_point_bottom[:, 1] = np.ones(256) * (254)
+    input_point_bottom = np.zeros((width, 2), dtype=np.int32)
+    input_point_bottom[:, 0] = np.arange(width)
+    input_point_bottom[:, 1] = np.ones(width) * (height-2)
     input_point = np.append(input_point, input_point_bottom, axis=0)
 
 if (not is_top_background) and (not is_right_background) and (not is_bottom_background) and (not is_left_background):
@@ -138,18 +173,16 @@ for i, (mask, score) in enumerate(zip(masks, scores)):
 # Increasing backgound space
 # Create a new image with extra pixels
 print("adding additional backgound space")
-x_offset, y_offset = int(256/2), 256
-new_height = target_shape[0] + y_offset
-new_width = target_shape[1] + 2 * x_offset  # x_offset pixels on each side
+x_offset, y_offset = int((output_shape - width)/2), output_shape - height
+new_height, new_width = output_shape, output_shape
 new_image = np.ones((new_height, new_width, 3), np.uint8) * 255  # White pixels
-new_image[y_offset:target_shape[0]+y_offset,
-          x_offset:target_shape[1]+x_offset] = image
+start_y = int(y_offset * (1 - go_up))
+new_image[start_y:height+start_y, x_offset:width+x_offset] = image
 
 # Create a new mask with extra pixels
 new_mask = np.ones((new_width, new_height), dtype=bool)
-new_mask[y_offset:target_shape[0]+y_offset,
-         x_offset:target_shape[1]+x_offset] = masks[-1]
-
+new_mask[start_y:height+start_y,
+         x_offset:width+x_offset] = masks[-1]
 
 # choose the right mask ***************
 # mask = 1 - masks[-1]
