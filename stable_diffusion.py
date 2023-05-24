@@ -17,7 +17,7 @@ device = "cpu"
 server_or_drive = "drive"  # "server" or "drive"
 
 
-num_samples = 3
+num_samples = 2
 
 
 def convert_to_rgb(image_path):
@@ -91,7 +91,7 @@ images = pipe(
     prompt=prompt,
     image=img,
     mask_image=mask,
-    negative_prompt=negative_prompt,
+    # negative_prompt=negative_prompt,
     guidance_scale=guidance_scale,
     # generator=generator,
     num_images_per_prompt=num_samples,
@@ -105,4 +105,5 @@ images = pipe(
 
 counter = 0
 for img in images:
-    img.save(out+str(counter)+"png")
+    img.save(out + "_" + str(counter)+"_stablediffusion.png")
+    counter += 1
