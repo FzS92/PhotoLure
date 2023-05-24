@@ -7,16 +7,16 @@ from pathlib import Path
 import os
 
 # Specify image path, y position of image in the larger image, and  background lines
-img_path = "./images/selfie.jpg"
+img_path = "./images/drunk1.jpg"
 is_top_background = True
 is_left_background = True
 is_right_background = True
-is_bottom_background = False
-go_up = 0.1
+is_bottom_background = True
+go_up = 0.0
 
 
 target_path = "./data"
-target_shape = 256
+target_shape = 350
 output_shape = 512
 
 # Check if the results directory exists
@@ -68,7 +68,7 @@ def resize_image(img_path):
     max_dimension = max(height, width)
 
     # Calculate the scaling factor
-    scale = 256 / max_dimension
+    scale = target_shape / max_dimension
 
     # Resize the image with the scaling factor
     new_width = int(width * scale)
@@ -103,12 +103,6 @@ device = "cpu"
 # input_point = np.array([[0, 0], [255, 0]])
 # input_label = np.array([1, 1])
 input_point = np.empty((0, 2))
-
-
-target_shape = 256
-output_shape = 512
-width, height
-
 
 if is_top_background:
     input_point_top = np.zeros((width, 2), dtype=np.int32)
