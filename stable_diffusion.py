@@ -4,12 +4,20 @@ from PIL import Image
 import PIL
 
 
-img = 'data/celeb2.png'
-mask = 'data/mask_celeb2.png'
-out = 'data/out_celeb2'
+img = 'data/drunk1.png'
+mask = 'data/mask_drunk1.png'
+out = 'data/out_drunk1'
 
-
+# celeb2
 prompt = 'Mayan city pramid sunset ivy foliage abandoned luminiscense scultures dark sky forest stars concept landscape environment depth water waterfall river, nature, real, high quality, 4k'
+# banana
+prompt = 'A table, and in the background, scary lightning black and white, Real, nature, ultra detailed, 8k'
+# dog
+prompt = 'A pool full of water and there is table in the background, fancy, Real, detailed, 4k'
+# drunk
+prompt = 'A luxury huge private yacht, sailing in the bahamas with palm trees in the background and hardwood deck on the yacht, cinematic, nature, hyperrealistic, 8 k'
+
+
 negative_prompt = "face, mouth, teeth, hand, ears, fingers, body, head, hair, people, person, low quality, poor image"
 
 
@@ -17,7 +25,7 @@ device = "cpu"
 server_or_drive = "drive"  # "server" or "drive"
 
 
-num_samples = 2
+num_samples = 3
 
 
 def convert_to_rgb(image_path):

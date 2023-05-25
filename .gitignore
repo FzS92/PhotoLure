@@ -3,5 +3,7 @@
 *.jpeg
 *.jpg
 
+*.pt
 *.pth
+*.zip
 pretrained_stablediffusion/
