@@ -126,7 +126,7 @@ def segment(image, is_top_background=True, is_left_background=True, is_right_bac
             show_mask(mask, axes[i])
             axes[i].title.set_text(f"Mask {i+1}, Score: {score.item():.3f}")
             axes[i].axis("off")
-            plt.savefig(f"results/result{i}{image_id}.png")
+            # plt.savefig(f"results/result{i}{image_id}.png")
 
     def pil_save(addr, img):
         pil_image = Image.fromarray(np.uint8(img))

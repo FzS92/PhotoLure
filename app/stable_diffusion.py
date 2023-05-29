@@ -4,7 +4,7 @@ from PIL import Image
 import PIL
 
 
-def stable_diffusion(img, mask_stable, version, prompt):
+def stable_diffusion(img, mask_stable, version, prompt, guidance_scale):
 
     # # celeb2
     # prompt = 'Mayan city pramid sunset ivy foliage abandoned luminiscense scultures dark sky forest stars concept landscape environment depth water waterfall river, nature, real, high quality, 4k'
@@ -80,7 +80,7 @@ def stable_diffusion(img, mask_stable, version, prompt):
     # image and mask_image should be PIL images.
     # The mask structure is white for inpainting and black for keeping as is
 
-    guidance_scale = 7.5
+    guidance_scale = guidance_scale
     # generator = torch.Generator(device=device).manual_seed(
     #     0)  # change the seed to get different results
     num_inference_steps = 50
