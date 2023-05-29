@@ -10,5 +10,5 @@ Simply provide your image and a prompt, specify the model for generating your de
 
 ## Gradio
 
-You can find a Gradio app in the app foldor. Also, you can use it at HuggingFade at
+You can find a Gradio app in the app foldor. Also, you can use it at HuggingFace.
 https://huggingface.co/spaces/fzs/Photo_Lure
