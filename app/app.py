@@ -60,21 +60,58 @@ def main():
 
     # Create the Gradio interface
     input_image = gr.Image(type="pil")
+
+    '''
+    examples= [
+    ['Mayan city pramid sunset ivy foliage abandoned luminiscense scultures dark sky forest stars concept landscape environment depth water waterfall river, nature, real, high quality, 4k'],
+    ['A pool full of water and there is table in the background, fancy, Real, detailed, 4k'],
+    ['A table, and in the background, scary lightning black and white, Real, nature, ultra detailed, 8k'],
+    ['A luxury huge private yacht, sailing in the bahamas with palm trees in the background and hardwood deck on the yacht, cinematic, nature, hyperrealistic, 8 k']
+            ]
+    '''
+
     prompt = gr.Textbox(
         value='A luxury huge private yacht, sailing in the bahamas with palm trees in the background and hardwood deck on the yacht, cinematic, nature, hyperrealistic, 8 k')
     version = gr.Dropdown(
         ["Stable Diffusion v1", "Stable Diffusion v2"], value="Stable Diffusion v2")
     up = gr.Slider(0.0, 1.0, value=0.0, label="up",
                    info="Go up 0 to 100%")
-    guidance_scale = gr.Slider(1.0, 15, value=7.5, label="guidance_scale",
+    guidance_scale = gr.Slider(1.0, 100.0, value=7.5, label="guidance_scale",
                                info="Higher guidance scale encourages to generate images that are closely linked to the text prompt, usually at the expense of lower image quality.")
 
     large_image = gr.Image(type="pil")
     mask_output = gr.Image(type="pil")
     new_image = gr.Image(type="pil")
+    article = """
+            Description:
+            Discover your backdground with SAM (Segment Anything)
+            and seamlessly replace it with a vast background using
+            your desired prompt and other configurable settings
+            through a stable diffusion model or DALLE
+            (DALLE is available on GitHub).
+            
+            Usage:
+            Simply provide your image and a prompt,specify the model
+            for generating your desired background. Upwards your photo
+            using the "up" feature. Guidance_scale is a parameter
+            specifically designed for stable diffusion models, default
+            value of 7.5.
+            
+            GitHub:
+            Due to the free version of hosting space, you might experience
+            huge waiting time. However, you have the option to enhance your
+            experience by downloading the updated code with additional
+            features from https://github.com/FzS92/Dalle and utilizing Gradio
+            from https://github.com/FzS92/Dalle/tree/main/app to achieve faster
+            speeds on your local machine.
+            
+    """
+
+    description = "Change your image's background using SAM (segment anything) and a stable diffusion model"
+
 
     gr.Interface(fn=predict, inputs=[input_image, prompt, version, up, guidance_scale], outputs=[
-        large_image, mask_output, new_image]).launch(server_port=8080)
+        large_image, mask_output, new_image], title="Photo Lure", description=description, article=article).launch()
 
 
 if __name__ == "__main__":
