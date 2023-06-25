@@ -3,14 +3,15 @@ import torch
 from torchvision.transforms import ToTensor, ToPILImage
 import PIL
 
-from segment_anything import segment
+from segment_anything import segment_SAM
+from deeplab import segment_torch
 from stable_diffusion import stable_diffusion
+
 # Load your pre-trained PyTorch model
 # Define the transformation functions for image conversion
 
 
 def main():
-
     transform_to_tensor = ToTensor()
     transform_to_pil = ToPILImage()
 
@@ -44,10 +45,35 @@ def main():
 
     # Define the function to make predictions
 
-    def predict(input_image, prompt, version, up, guidance_scale, target_shape=256):
+    def predict(
+        input_image,
+        prompt,
+        Background_detector,
+        version,
+        up,
+        guidance_scale,
+        target_shape=256,
+    ):
         input_tensor = preprocess(input_image, target_shape=target_shape)
-        new_image, new_mask, mask_stable = segment(input_tensor, is_top_background=True, is_left_background=True, is_right_background=True,
-                                                   is_bottom_background=True, go_up=up, target_shape=256, sam_model="large")
+        if Background_detector == "SAM (Segment Anything)":
+            new_image, new_mask, mask_stable = segment_SAM(
+                input_tensor,
+                is_top_background=True,
+                is_left_background=True,
+                is_right_background=True,
+                is_bottom_background=True,
+                go_up=up,
+                target_shape=256,
+                sam_model="large",
+            )
+        else:
+            new_image, new_mask, mask_stable = segment_torch(
+                image=input_tensor,
+                model=Background_detector,
+                go_up=0.0,
+                target_shape=256,
+            )
+
         # print(new_image.shape)
         # print(new_image)
         new_image = PIL.Image.fromarray(new_image)
@@ -55,29 +81,48 @@ def main():
         # print(new_mask)
         new_mask = PIL.Image.fromarray(new_mask)
         new_image_2 = stable_diffusion(
-            new_image, mask_stable, version, prompt, guidance_scale)
+            new_image, mask_stable, version, prompt, guidance_scale
+        )
         return new_image, new_mask, new_image_2
 
     # Create the Gradio interface
     input_image = gr.Image(type="pil")
 
-    '''
+    """
     examples= [
     ['Mayan city pramid sunset ivy foliage abandoned luminiscense scultures dark sky forest stars concept landscape environment depth water waterfall river, nature, real, high quality, 4k'],
     ['A pool full of water and there is table in the background, fancy, Real, detailed, 4k'],
     ['A table, and in the background, scary lightning black and white, Real, nature, ultra detailed, 8k'],
     ['A luxury huge private yacht, sailing in the bahamas with palm trees in the background and hardwood deck on the yacht, cinematic, nature, hyperrealistic, 8 k']
             ]
-    '''
+    """
+
+    Background_detector = gr.Dropdown(
+        [
+            "SAM (Segment Anything)",
+            "deeplabv3_resnet101",
+            "deeplabv3_resnet50",
+            "fcn_resnet101",
+            "fcn_resnet50",
+            "deeplabv3_mobilenet_v3_large",
+        ],
+        value="deeplabv3_resnet50",
+    )
 
     prompt = gr.Textbox(
-        value='A luxury huge private yacht, sailing in the bahamas with palm trees in the background and hardwood deck on the yacht, cinematic, nature, hyperrealistic, 8 k')
+        value="A luxury huge private yacht, sailing in the bahamas with palm trees in the background and hardwood deck on the yacht, cinematic, nature, hyperrealistic, 8 k"
+    )
     version = gr.Dropdown(
-        ["Stable Diffusion v1", "Stable Diffusion v2"], value="Stable Diffusion v2")
-    up = gr.Slider(0.0, 1.0, value=0.0, label="up",
-                   info="Go up 0 to 100%")
-    guidance_scale = gr.Slider(1.0, 100.0, value=7.5, label="guidance_scale",
-                               info="Higher guidance scale encourages to generate images that are closely linked to the text prompt, usually at the expense of lower image quality.")
+        ["Stable Diffusion v1", "Stable Diffusion v2"], value="Stable Diffusion v2"
+    )
+    up = gr.Slider(0.0, 1.0, value=0.0, label="up", info="Go up 0 to 100%")
+    guidance_scale = gr.Slider(
+        1.0,
+        100.0,
+        value=7.5,
+        label="guidance_scale",
+        info="Higher guidance scale encourages to generate images that are closely linked to the text prompt, usually at the expense of lower image quality.",
+    )
 
     large_image = gr.Image(type="pil")
     mask_output = gr.Image(type="pil")
@@ -107,11 +152,16 @@ def main():
             
     """
 
-    description = "Change your image's background using SAM (segment anything) and a stable diffusion model"
+    description = "Change your image's background using stable diffusion or DALLE"
 
-
-    gr.Interface(fn=predict, inputs=[input_image, prompt, version, up, guidance_scale], outputs=[
-        large_image, mask_output, new_image], title="Photo Lure", description=description, article=article).launch()
+    gr.Interface(
+        fn=predict,
+        inputs=[input_image, prompt, Background_detector, version, up, guidance_scale],
+        outputs=[large_image, mask_output, new_image],
+        title="Photo Lure",
+        description=description,
+        article=article,
+    ).launch()
 
 
 if __name__ == "__main__":

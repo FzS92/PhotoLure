@@ -5,7 +5,6 @@ import PIL
 
 
 def stable_diffusion(img, mask_stable, version, prompt, guidance_scale):
-
     # # celeb2
     # prompt = 'Mayan city pramid sunset ivy foliage abandoned luminiscense scultures dark sky forest stars concept landscape environment depth water waterfall river, nature, real, high quality, 4k'
     # # banana
@@ -42,20 +41,20 @@ def stable_diffusion(img, mask_stable, version, prompt, guidance_scale):
         transformed_alpha = last_dimension.point(lambda a: 255 - a)
 
         # Create a new image with the last dimension as grayscale
-        last_dimension_image = Image.new('L', image.size)
+        last_dimension_image = Image.new("L", image.size)
         last_dimension_image.putdata(transformed_alpha.getdata())
 
         return last_dimension_image
 
     def image_grid(imgs, rows, cols):
-        assert len(imgs) == rows*cols
+        assert len(imgs) == rows * cols
 
         w, h = imgs[0].size
-        grid = PIL.Image.new('RGB', size=(cols*w, rows*h))
+        grid = PIL.Image.new("RGB", size=(cols * w, rows * h))
         grid_w, grid_h = grid.size
 
         for i, img in enumerate(imgs):
-            grid.paste(img, box=(i % cols*w, i//cols*h))
+            grid.paste(img, box=(i % cols * w, i // cols * h))
         return grid
 
     img = convert_to_rgb(img)
