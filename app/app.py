@@ -70,7 +70,7 @@ def main():
             new_image, new_mask, mask_stable = segment_torch(
                 image=input_tensor,
                 model=Background_detector,
-                go_up=0.0,
+                go_up=up,
                 target_shape=256,
             )
 
