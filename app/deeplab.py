@@ -57,7 +57,7 @@ def segment_torch(
     input_batch = input_batch.to(device)
 
     # Enable mixed precision for GPU execution
-    with torch.no_grad:
+    with torch.no_grad():
         if device == "cuda":
             with torch.cuda.amp.autocast():
                 output = model(input_batch)["out"]
