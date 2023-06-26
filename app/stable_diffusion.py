@@ -83,7 +83,7 @@ def stable_diffusion(img, mask_stable, version, prompt, guidance_scale):
     # generator = torch.Generator(device=device).manual_seed(
     #     0)  # change the seed to get different results
     num_inference_steps = 50
-
+    # print(mask)
     images = pipe(
         prompt=prompt,
         image=img,

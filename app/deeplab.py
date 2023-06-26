@@ -13,6 +13,7 @@ def segment_torch(
     go_up=0.0,
     target_shape=256,
 ):
+    print("Finding the background started")
     # Determine the maximum width and height for resizing
     # max_size = target_shape
     # image_path = "./images/celeb4.jpg"
@@ -74,7 +75,6 @@ def segment_torch(
     background_mask = background_class == 0
 
     # print(background_mask)
-    print("adding additional backgound space")
     output_shape = 512
     width, height = image.size
     x_offset, y_offset = int((output_shape - width) / 2), output_shape - height
@@ -112,6 +112,7 @@ def segment_torch(
     # pil_save(str(target_path / f'mask_{image_id}.png'), new_mask*255)
 
     # print("Files are saved")
+    print("Finding the background ended")
 
     return (
         new_image,

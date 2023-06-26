@@ -2,6 +2,9 @@ import gradio as gr
 import torch
 from torchvision.transforms import ToTensor, ToPILImage
 import PIL
+from PIL import Image
+
+import numpy as np
 
 from segment_anything import segment_SAM
 from deeplab import segment_torch
@@ -10,39 +13,50 @@ from stable_diffusion import stable_diffusion
 # Load your pre-trained PyTorch model
 # Define the transformation functions for image conversion
 
+# Define the function to preprocess the input image
+
+
+def preprocess(input_image, target_shape):
+    width, height = input_image.size
+    max_dimension = max(height, width)
+    scale = target_shape / max_dimension
+    new_width = int(width * scale)
+    new_height = int(height * scale)
+    if new_width % 2 != 0:  # If the number is odd
+        new_width += 1  # Add 1 to make it even
+    if new_height % 2 != 0:  # If the number is odd
+        new_height += 1  # Add 1 to make it even
+
+    input_image = input_image.resize((new_width, new_height))
+    # input_image.save('check2.png')
+    # input_image = transform_to_tensor(input_image).permute(1, 2, 0)
+    # print(input_tensor.shape)
+    # print(input_tensor.shape)
+    # return input_tensor.unsqueeze(0)
+    return input_image
+
+
+def replace_pixels_with_mask(image1, image2, mask):
+    # Convert images to numpy arrays
+    img1_array = np.array(image1)
+    img2_array = np.array(image2)
+
+    # Ensure the mask has the same shape as the image arrays
+    if img1_array.shape != mask.shape:
+        mask = np.expand_dims(
+            mask, axis=-1
+        )  # Add an extra dimension to match the image arrays
+
+    # Replace pixels based on the mask
+    replaced_array = np.where(mask == 0, img2_array, img1_array)
+
+    # Create a PIL image from the replaced array
+    replaced_image = Image.fromarray(replaced_array.astype(np.uint8))
+
+    return replaced_image
+
 
 def main():
-    transform_to_tensor = ToTensor()
-    transform_to_pil = ToPILImage()
-
-    # Define the function to preprocess the input image
-
-    def preprocess(input_image, target_shape):
-        width, height = input_image.size
-        max_dimension = max(height, width)
-        scale = target_shape / max_dimension
-        new_width = int(width * scale)
-        new_height = int(height * scale)
-        if new_width % 2 != 0:  # If the number is odd
-            new_width += 1  # Add 1 to make it even
-        if new_height % 2 != 0:  # If the number is odd
-            new_height += 1  # Add 1 to make it even
-
-        input_image = input_image.resize((new_width, new_height))
-        # input_image.save('check2.png')
-        # input_image = transform_to_tensor(input_image).permute(1, 2, 0)
-        # print(input_tensor.shape)
-        # print(input_tensor.shape)
-        # return input_tensor.unsqueeze(0)
-        return input_image
-
-    # Define the function to postprocess the output image
-
-    def postprocess(output_tensor):
-        # output_tensor = output_tensor.squeeze(0)
-        output_image = transform_to_pil(output_tensor.permute(2, 0, 1))
-        return output_image
-
     # Define the function to make predictions
 
     def predict(
@@ -73,7 +87,6 @@ def main():
                 go_up=up,
                 target_shape=256,
             )
-
         # print(new_image.shape)
         # print(new_image)
         new_image = PIL.Image.fromarray(new_image)
@@ -83,6 +96,9 @@ def main():
         new_image_2 = stable_diffusion(
             new_image, mask_stable, version, prompt, guidance_scale
         )
+
+        new_image_2 = replace_pixels_with_mask(new_image_2, new_image, mask_stable)
+
         return new_image, new_mask, new_image_2
 
     # Create the Gradio interface
