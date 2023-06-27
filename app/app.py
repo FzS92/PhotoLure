@@ -60,14 +60,20 @@ def main():
     # Define the function to make predictions
 
     def predict(
-        input_image,
         prompt,
         Background_detector,
         version,
         up,
         guidance_scale,
         target_shape=256,
+        input_image=None,
+        input_image_camera=None,
     ):
+        if input_image_camera:
+            input_image = input_image_camera
+        else:
+            input_image = input_image
+
         input_tensor = preprocess(input_image, target_shape=target_shape)
         if Background_detector == "SAM (Segment Anything)":
             new_image, new_mask, mask_stable = segment_SAM(
@@ -102,7 +108,8 @@ def main():
         return new_image, new_mask, new_image_2
 
     # Create the Gradio interface
-    input_image = gr.Image(type="pil")
+    input_image = gr.Image(type="pil", source="upload")
+    input_image_camera = gr.Image(type="pil", source="webcam")
 
     """
     examples= [
@@ -172,7 +179,15 @@ def main():
 
     gr.Interface(
         fn=predict,
-        inputs=[input_image, prompt, Background_detector, version, up, guidance_scale],
+        inputs=[
+            input_image,
+            input_image_camera,
+            prompt,
+            Background_detector,
+            version,
+            up,
+            guidance_scale,
+        ],
         outputs=[large_image, mask_output, new_image],
         title="Photo Lure",
         description=description,
