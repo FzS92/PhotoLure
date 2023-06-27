@@ -10,12 +10,8 @@ from segment_anything import segment_SAM
 from deeplab import segment_torch
 from stable_diffusion import stable_diffusion
 
-# Load your pre-trained PyTorch model
-# Define the transformation functions for image conversion
 
 # Define the function to preprocess the input image
-
-
 def preprocess(input_image, target_shape):
     width, height = input_image.size
     max_dimension = max(height, width)
@@ -35,7 +31,7 @@ def preprocess(input_image, target_shape):
     # return input_tensor.unsqueeze(0)
     return input_image
 
-
+# Fix faces
 def replace_pixels_with_mask(image1, image2, mask):
     # Convert images to numpy arrays
     img1_array = np.array(image1)
@@ -60,14 +56,14 @@ def main():
     # Define the function to make predictions
 
     def predict(
+        input_image,
+        input_image_camera,
         prompt,
         Background_detector,
         version,
         up,
         guidance_scale,
         target_shape=256,
-        input_image=None,
-        input_image_camera=None,
     ):
         if input_image_camera:
             input_image = input_image_camera
