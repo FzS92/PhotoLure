@@ -31,6 +31,7 @@ def preprocess(input_image, target_shape):
     # return input_tensor.unsqueeze(0)
     return input_image
 
+
 # Fix faces
 def replace_pixels_with_mask(image1, image2, mask):
     # Convert images to numpy arrays
