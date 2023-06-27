@@ -60,16 +60,18 @@ def main():
         input_image,
         input_image_camera,
         prompt,
+        ratio_of_image,
         Background_detector,
         version,
         up,
         guidance_scale,
-        target_shape=256,
     ):
         if input_image_camera:
             input_image = input_image_camera
         else:
             input_image = input_image
+
+        target_shape = ratio_of_image * 512
 
         input_tensor = preprocess(input_image, target_shape=target_shape)
         if Background_detector == "SAM (Segment Anything)":
@@ -132,6 +134,14 @@ def main():
     prompt = gr.Textbox(
         value="A luxury huge private yacht, sailing in the bahamas with palm trees in the background and hardwood deck on the yacht, cinematic, nature, hyperrealistic, 8 k"
     )
+    ratio_of_image = gr.Slider(
+        0.25,
+        1,
+        value=0.5,
+        label="Ratio of the image to the background.",
+        info="Default value: 0.5. Increase to have a smalller background",
+    )
+
     version = gr.Dropdown(
         ["Stable Diffusion v1", "Stable Diffusion v2"], value="Stable Diffusion v2"
     )
@@ -180,6 +190,7 @@ def main():
             input_image,
             input_image_camera,
             prompt,
+            ratio_of_image,
             Background_detector,
             version,
             up,
