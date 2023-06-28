@@ -8,3 +8,5 @@
 *.zip
 pretrained_stablediffusion/
 FastSAM/
+data/
+result/
