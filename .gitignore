@@ -1,5 +1,5 @@
 # Ignore photos with common file extensions
-# *.png
+*.png
 # *.jpeg
 # *.jpg
 
