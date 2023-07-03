@@ -6,11 +6,11 @@ import PIL
 from PIL import Image
 
 import numpy as np
-
+from pathlib import Path
 from segment_anything import segment_SAM
 from deeplab import segment_torch
 from stable_diffusion import stable_diffusion
-
+from Dalle import dalle
 
 # Define the function to preprocess the input image
 def preprocess(input_image, target_shape):
@@ -151,18 +151,44 @@ def main():
                 go_up=up,
                 target_shape=256,
             )
-        # print(new_image.shape)
-        # print(new_image)
-        new_image = PIL.Image.fromarray(new_image)
 
-        # print(new_mask)
-        new_mask = PIL.Image.fromarray(new_mask)
-        new_image_2 = stable_diffusion(
-            new_image, mask_stable, version, prompt, guidance_scale
-        )
+        if 'Stable Diffusion' in version:
+            new_image = PIL.Image.fromarray(new_image)
 
-        new_image_2 = replace_pixels_with_mask(new_image_2, new_image, mask_stable)
+            # print(new_mask)
+            new_mask = PIL.Image.fromarray(new_mask)
+            new_image_2 = stable_diffusion(
+                new_image, mask_stable, version, prompt, guidance_scale
+            )
+            new_image_2 = replace_pixels_with_mask(new_image_2, new_image, mask_stable)
 
+        elif 'DallE' in version:
+            folder_path = Path('data/dalle_generated')
+            folder_path.mkdir(parents=True, exist_ok=True)
+            
+            image_path = 'data/dalle_generated/dalle_img.png'
+            dalle_image = np.zeros((*new_image.shape, 4))
+            dalle_image = new_image
+            dalle_image = Image.fromarray(np.uint8(dalle_image))
+            dalle_image.save(image_path)
+            
+            
+            mask_path = 'data/dalle_generated/dalle_mask.png'
+            dalle_mask = np.zeros((*new_mask.shape[:2], 4))
+            dalle_mask[:, :, -1] = new_mask[:, :, 0]
+            dalle_mask = Image.fromarray(np.uint8(dalle_mask))
+            dalle_mask.save(mask_path)
+            
+            new_image_2 = dalle(image_path, mask_path, prompt)
+
+
+            # new_image = pass
+            # new_mask = 
+            
+            
+        else:
+            raise NotImplementedError(f'Given version: {version} is not implemented.')
+        
         return new_image, new_mask, new_image_2
 
     # Create the Gradio interface
@@ -202,7 +228,7 @@ def main():
     )
 
     version = gr.Dropdown(
-        ["Stable Diffusion v1", "Stable Diffusion v2"], value="Stable Diffusion v2"
+        ["Stable Diffusion v1", "Stable Diffusion v2", "DallE"], value="Stable Diffusion v2"
     )
     up = gr.Slider(0.0, 1.0, value=0.0, label="up", info="Go up 0 to 100%")
     guidance_scale = gr.Slider(
