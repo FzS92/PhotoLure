@@ -11,6 +11,7 @@ from segment_anything import segment_SAM
 from deeplab import segment_torch
 from stable_diffusion import stable_diffusion
 from Dalle import dalle
+from chat import chat_gpt
 
 # Define the function to preprocess the input image
 def preprocess(input_image, target_shape):
@@ -119,12 +120,25 @@ def main():
         input_image,
         input_image_camera,
         prompt,
+        chatgpt,
         ratio_of_image,
         Background_detector,
         version,
         up,
         guidance_scale,
+        
     ):
+        # prompt = gpt_prompt(prompt)
+        
+        if chatgpt == 'Input Prompt':
+            print('Using given input prompt')
+            prompt = prompt
+        elif chatgpt == 'Chat GPT':
+            print('Using GPT generated prompt')
+            prompt = chat_gpt(prompt)
+            # gpt_prompt.lunch
+            
+        
         if input_image_camera:
             input_image = input_image_camera
         else:
@@ -189,7 +203,7 @@ def main():
         else:
             raise NotImplementedError(f'Given version: {version} is not implemented.')
         
-        return new_image, new_mask, new_image_2
+        return prompt, new_image, new_mask, new_image_2
 
     # Create the Gradio interface
     input_image = gr.Image(type="pil", source="upload")
@@ -216,9 +230,23 @@ def main():
         value="SAM (Segment Anything)",
     )
 
+    
+    
+    
+    
     prompt = gr.Textbox(
-        value="A luxury huge private yacht, sailing in the bahamas with palm trees in the background and hardwood deck on the yacht, cinematic, nature, hyperrealistic, 8 k"
+        value="A luxury huge private yacht, sailing in the bahamas with palm trees in the background and hardwood deck on the yacht, cinematic, nature, hyperrealistic, 8 k",  
     )
+    Used_Prompt = gr.Textbox(
+        value="Used Prompt",  
+    )
+    chatgpt = gr.Dropdown(
+        ["Chat GPT", "Input Prompt"], value="Chat GPT"
+    )
+    
+    
+    
+    
     ratio_of_image = gr.Slider(
         0.25,
         1,
@@ -228,7 +256,7 @@ def main():
     )
 
     version = gr.Dropdown(
-        ["Stable Diffusion v1", "Stable Diffusion v2", "DallE"], value="Stable Diffusion v2"
+        ["Stable Diffusion v1", "Stable Diffusion v2", "DallE"], value="DallE"
     )
     up = gr.Slider(0.0, 1.0, value=0.0, label="up", info="Go up 0 to 100%")
     guidance_scale = gr.Slider(
@@ -275,13 +303,16 @@ def main():
             input_image,
             input_image_camera,
             prompt,
+            chatgpt,
             ratio_of_image,
             Background_detector,
             version,
             up,
             guidance_scale,
+            
+            
         ],
-        outputs=[large_image, mask_output, new_image],
+        outputs=[Used_Prompt, large_image, mask_output, new_image],
         title="Photo Lure",
         description=description,
         article=article,
