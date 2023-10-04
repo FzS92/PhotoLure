@@ -74,6 +74,7 @@ examples = [
         images_examples[0],
         None,
         str(prompt_examples[0]),
+        'Input Prompt',
         0.66,
         "SAM (Segment Anything)",
         "Stable Diffusion v2",
@@ -84,6 +85,7 @@ examples = [
         images_examples[1],
         None,
         str(prompt_examples[1]),
+        'Chat GPT',
         0.66,
         "SAM (Segment Anything)",
         "Stable Diffusion v2",
@@ -94,6 +96,7 @@ examples = [
         images_examples[2],
         None,
         str(prompt_examples[2]),
+        'Input Prompt',
         0.66,
         "SAM (Segment Anything)",
         "Stable Diffusion v2",
@@ -104,6 +107,7 @@ examples = [
         images_examples[3],
         None,
         str(prompt_examples[3]),
+        'Chat GPT',
         0.66,
         "SAM (Segment Anything)",
         "Stable Diffusion v1",
@@ -317,7 +321,7 @@ def main():
         description=description,
         article=article,
         examples=examples,
-    ).launch(share=False)
+    ).launch(share=True)
 
 
 if __name__ == "__main__":
