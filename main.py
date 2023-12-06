@@ -2,6 +2,8 @@ import gradio as gr
 import numpy as np
 import PIL
 from PIL import Image
+from pathlib import Path
+
 
 from src.chat import chat_gpt
 from src.Dalle import dalle
