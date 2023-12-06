@@ -1,9 +1,7 @@
 import numpy as np
 import torch
-from torchvision import models
-from torchvision import transforms
 from PIL import Image
-
+from torchvision import models, transforms
 from torchvision.transforms import ToTensor
 
 

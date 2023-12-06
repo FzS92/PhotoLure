@@ -1,7 +1,7 @@
+import PIL
 import torch
 from diffusers import StableDiffusionInpaintPipeline
 from PIL import Image
-import PIL
 
 
 def stable_diffusion(img, mask_stable, version, prompt, guidance_scale):
@@ -14,7 +14,16 @@ def stable_diffusion(img, mask_stable, version, prompt, guidance_scale):
     # # drunk
     # prompt = 'A luxury huge private yacht, sailing in the bahamas with palm trees in the background and hardwood deck on the yacht, cinematic, nature, hyperrealistic, 8 k'
 
-    negative_prompt = "blurry, duplicate, low quality, unreal, ugly, cropped, gross proportions, malformed limbs, lowres, mutation, mutilated, morbid, watermark, worst quality, cloned face, out of frame, signature, bad anatomy, cropped, disfigured, error, deformed,dehydrated,  bad proportions, extra arms, long neck, extra fingers,   text, extra legs, animation, cartoon, deformed, ugly, face, mouth, teeth, hand, ears, fingers, body, head, hair, people, person, poor image, poorly Rendered face, username, too many fingers, poorly drawn hands, poorly drawn face, missing legs"
+    negative_prompt = (
+        "blurry, duplicate, low quality, unreal, ugly, cropped, gross proportions,"
+        " malformed limbs, lowres, mutation, mutilated, morbid, watermark, worst"
+        " quality, cloned face, out of frame, signature, bad anatomy, cropped,"
+        " disfigured, error, deformed,dehydrated,  bad proportions, extra arms, long"
+        " neck, extra fingers,   text, extra legs, animation, cartoon, deformed, ugly,"
+        " face, mouth, teeth, hand, ears, fingers, body, head, hair, people, person,"
+        " poor image, poorly Rendered face, username, too many fingers, poorly drawn"
+        " hands, poorly drawn face, missing legs"
+    )
 
     device = "cuda"
     server_or_drive = "server"  # "server" or "drive"

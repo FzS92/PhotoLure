@@ -1,14 +1,13 @@
 # Ref: https://github.com/huggingface/notebooks/blob/main/examples/segment_anything.ipynb
 
 # from segment_anything import SamPredictor, sam_model_registry
-from transformers import SamModel, SamProcessor
-
-import torch
-import numpy as np
-import matplotlib.pyplot as plt
 import cv2
+import matplotlib.pyplot as plt
+import numpy as np
+import torch
 from PIL import Image
-from torchvision.transforms import ToTensor, ToPILImage
+from torchvision.transforms import ToPILImage, ToTensor
+from transformers import SamModel, SamProcessor
 
 
 def segment_SAM(
@@ -191,7 +190,7 @@ def segment_SAM(
             image, dsize=(new_width, new_height), interpolation=cv2.INTER_CUBIC
         )
         # print(image)
-        pil_save(("check.png"), image * 255)
+        pil_save("check.png", image * 255)
         return image, new_width, new_height
 
     # make the target directory
