@@ -7,7 +7,6 @@ ftfy
 huggingface-hub
 lit
 matplotlib
-numpy
 onnx
 onnxruntime
 openai
