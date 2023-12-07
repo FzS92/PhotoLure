@@ -18,3 +18,7 @@ Discover your background with SAM (Segment Anything) and seamlessly replace it w
 Simply provide your image and, give a prompt, specify the model for generating your desired background. upwards your photo using the "up" feature. Guidance_scale is a parameter specifically designed for stable diffusion models, with a default value of 7.5.
 
 If you want to use DALLE or ChatGPT, modify the API key in the src file.
+
+## Aknowledgement
+
+This project is supported by the "Research Through Design Into AI Edge Cases" group research at Concordia University, providing funding for its development.
